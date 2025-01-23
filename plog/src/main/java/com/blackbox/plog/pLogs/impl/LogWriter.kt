@@ -19,7 +19,7 @@ object LogWriter {
 
 
     init {
-        if (secretKey == null)
+        if (secretKey == null && PLogImpl.getConfig() != null)
             secretKey = PLogImpl.getConfig()?.secretKey
     }
 
@@ -70,7 +70,7 @@ object LogWriter {
         if (shouldLog.first) {
             appendToFile(shouldLog.second, logFormatted)
         } else {
-            if (PLogImpl.getConfig()?.debugFileOperations!!)
+            if (PLogImpl.getConfig() != null && PLogImpl.getConfig()?.debugFileOperations == true)
                 Log.i(PLog.DEBUG_TAG, "writeSimpleLogs: Unable to write log file.")
         }
     }
@@ -78,12 +78,17 @@ object LogWriter {
     /*
      * Verify if logs can be written.
      */
-    fun shouldWriteLog(file: File, isPLog: Boolean = true, logFileName: String = ""): Pair<Boolean, String> {
+    fun shouldWriteLog(
+        file: File,
+        isPLog: Boolean = true,
+        logFileName: String = ""
+    ): Pair<Boolean, String> {
         val path = file.path
 
         if (file.length() > 0) {
             val length = file.length()
-            val maxLength = PLogImpl.getConfig()?.singleLogFileSize!! * (1024 * 1024)
+            val maxLength =
+                if (PLogImpl.getConfig() != null) PLogImpl.getConfig()?.singleLogFileSize!! * (1024 * 1024) else 2 * (1024 * 1024)
 
             if (length > maxLength) {
 
@@ -92,9 +97,9 @@ object LogWriter {
                 else
                     PART_FILE_CREATED_DATALOG = true
 
-                if (!PLogImpl.getConfig()?.forceWriteLogs!!) {
+                if (PLogImpl.getConfig() != null && !PLogImpl.getConfig()?.forceWriteLogs!!) {
 
-                    if (PLogImpl.getConfig()?.debugFileOperations!!)
+                    if (PLogImpl.getConfig() != null && PLogImpl.getConfig()?.debugFileOperations!!)
                         Log.i(PLog.DEBUG_TAG, "File size exceeded!")
 
                     return Pair(false, path)
@@ -111,9 +116,13 @@ object LogWriter {
     /*
      * This will create a new part file for existing parent file.
      */
-    private fun createPartFile(file: File, isPLog: Boolean = true, logFileName: String = ""): String {
+    private fun createPartFile(
+        file: File,
+        isPLog: Boolean = true,
+        logFileName: String = ""
+    ): String {
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
+        if (PLogImpl.getConfig() != null && PLogImpl.getConfig()?.debugFileOperations!!)
             Log.i(PLog.DEBUG_TAG, "createPartFile: Creating part file..")
 
         var path = ""
