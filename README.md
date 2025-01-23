@@ -3,7 +3,8 @@
 ### PLog and DataLog (Loggers)
 ##### `A file based advanced logging framework written in Kotlin`.
 
-[![](https://jitpack.io/v/umair13adil/RxLogs.svg)](https://jitpack.io/#umair13adil/RxLogs)
+[![](https://jitpack.io/v/abdulkhira1/RxLogs.svg)](https://jitpack.io/#abdulkhira1/RxLogs)
+
 
 Overview
 --------
