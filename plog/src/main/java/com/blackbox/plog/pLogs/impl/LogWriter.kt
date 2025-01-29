@@ -3,7 +3,11 @@ package com.blackbox.plog.pLogs.impl
 import android.util.Log
 import androidx.annotation.Keep
 import com.blackbox.plog.pLogs.PLog
-import com.blackbox.plog.pLogs.utils.*
+import com.blackbox.plog.pLogs.utils.CURRENT_PART_FILE_PATH_DATALOG
+import com.blackbox.plog.pLogs.utils.CURRENT_PART_FILE_PATH_PLOG
+import com.blackbox.plog.pLogs.utils.PART_FILE_CREATED_DATALOG
+import com.blackbox.plog.pLogs.utils.PART_FILE_CREATED_PLOG
+import com.blackbox.plog.pLogs.utils.PART_FILE_PREFIX
 import com.blackbox.plog.utils.appendToFile
 import com.blackbox.plog.utils.checkFileExists
 import com.blackbox.plog.utils.setupFilePaths

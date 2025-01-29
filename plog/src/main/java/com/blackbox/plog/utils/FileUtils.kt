@@ -66,34 +66,40 @@ fun appendToFile(path: String, data: String) {
 }
 
 fun checkFileExists(path: String, isPLog: Boolean = true): File {
-
     val pFile = File(path).parentFile
 
-    val directory = File(pFile.absolutePath)
-
-    if (!directory.exists())
-        directory.mkdirs()
+    // Ensure the parent directory exists
+    if (pFile != null && !pFile.exists()) {
+        val dirCreated = pFile.mkdirs()  // Create all non-existent parent directories
+        if (!dirCreated) {
+            Log.e(PLog.DEBUG_TAG, "checkFileExists: Failed to create directory: ${pFile.absolutePath}")
+        }
+    }
 
     val file = File(path)
-
     try {
         if (!file.exists()) {
-            if (PLogImpl.getConfig()?.debugFileOperations!!)
+            if (PLogImpl.getConfig()?.debugFileOperations == true) {
                 Log.i(PLog.DEBUG_TAG, "checkFileExists: File doesn't exist. Creating file.")
-
-            file.createNewFile()
+            }
+            val fileCreated = file.createNewFile()
+            if (!fileCreated) {
+                Log.e(PLog.DEBUG_TAG, "checkFileExists: Failed to create file: ${file.absolutePath}")
+            }
             saveFileEvent(file, isPLog)
         }
     } catch (e: Exception) {
         e.printStackTrace()
         saveFileEvent(file, isPLog)
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
+        if (PLogImpl.getConfig()?.debugFileOperations == true) {
             Log.i(PLog.DEBUG_TAG, "checkFileExists: ${e.message}")
+        }
     }
 
     return file
 }
+
 
 private fun saveFileEvent(file: File, isPLog: Boolean = true) {
 
