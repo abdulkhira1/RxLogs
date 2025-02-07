@@ -70,13 +70,16 @@ fun appendToFile(path: String, data: String) {
         }
     } catch (e: NullPointerException) {
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
-        Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
+        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == $path") }
+
+
+        Log.i(PLog.DEBUG_TAG, "appendToFile: $path Unable to append to file.. ${e.message}")
     } catch (e: RuntimeException) {
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == $path") }
 
-        Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "appendToFile: $path Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == $path") }
@@ -117,13 +120,13 @@ fun checkFileExists(path: String, isPLog: Boolean = true): File {
         }
     } catch (e: NullPointerException) {
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == $path") }
 
 
         Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
     } catch (e: RuntimeException) {
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == $path") }
 
 
         Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
@@ -159,19 +162,19 @@ private fun saveFileEvent(file: File, isPLog: Boolean = true) {
             Log.i(PLog.DEBUG_TAG, "New file created: ${file.path}")
     } catch (e: NullPointerException) {
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == ${file.path}") }
 
 
         Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
     } catch (e: RuntimeException) {
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == ${file.path}") }
 
 
         Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == ${file.path}") }
 
 
         Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to write to file.. ${e.message}")
