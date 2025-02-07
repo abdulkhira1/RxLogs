@@ -32,6 +32,12 @@ fun writeToFile(path: String, data: String) {
             file.createNewFile()
             RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
         }
+    } catch (e: NullPointerException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
@@ -56,6 +62,12 @@ fun appendToFile(path: String, data: String) {
             file.createNewFile()
             RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
         }
+    } catch (e: NullPointerException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
@@ -72,7 +84,10 @@ fun checkFileExists(path: String, isPLog: Boolean = true): File {
     if (pFile != null && !pFile.exists()) {
         val dirCreated = pFile.mkdirs()  // Create all non-existent parent directories
         if (!dirCreated) {
-            Log.e(PLog.DEBUG_TAG, "checkFileExists: Failed to create directory: ${pFile.absolutePath}")
+            Log.e(
+                PLog.DEBUG_TAG,
+                "checkFileExists: Failed to create directory: ${pFile.absolutePath}"
+            )
         }
     }
 
@@ -84,10 +99,19 @@ fun checkFileExists(path: String, isPLog: Boolean = true): File {
             }
             val fileCreated = file.createNewFile()
             if (!fileCreated) {
-                Log.e(PLog.DEBUG_TAG, "checkFileExists: Failed to create file: ${file.absolutePath}")
+                Log.e(
+                    PLog.DEBUG_TAG,
+                    "checkFileExists: Failed to create file: ${file.absolutePath}"
+                )
             }
             saveFileEvent(file, isPLog)
         }
+    } catch (e: NullPointerException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         saveFileEvent(file, isPLog)
@@ -103,95 +127,124 @@ fun checkFileExists(path: String, isPLog: Boolean = true): File {
 
 private fun saveFileEvent(file: File, isPLog: Boolean = true) {
 
-    if (PLogImpl.getConfig()?.debugFileOperations!!)
-        Log.i(PLog.DEBUG_TAG, "saveFileEvent: New file created: ${file.path}")
+    try {
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "saveFileEvent: New file created: ${file.path}")
 
-    //Check if file created if part file
-    if (isPLog && !file.name.contains(PART_FILE_PREFIX)) {
-        PART_FILE_CREATED_PLOG = false
-    } else if (!isPLog && !file.name.contains(PART_FILE_PREFIX)) {
-        PART_FILE_CREATED_DATALOG = false
+        //Check if file created if part file
+        if (isPLog && !file.name.contains(PART_FILE_PREFIX)) {
+            PART_FILE_CREATED_PLOG = false
+        } else if (!isPLog && !file.name.contains(PART_FILE_PREFIX)) {
+            PART_FILE_CREATED_DATALOG = false
+        }
+
+        RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "New file created: ${file.path}")
+    } catch (e: NullPointerException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
+    } catch (e: Exception) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to write to file.. ${e.message}")
     }
-
-    RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
-
-    if (PLogImpl.getConfig()?.debugFileOperations!!)
-        Log.i(PLog.DEBUG_TAG, "New file created: ${file.path}")
 }
 
 /*
  * This will setup directory structure according to provided 'Directory Structure' Value.
  */
 fun setupFilePaths(fileName: String = "", isPLog: Boolean = true): String {
+    try {
+        //Create Root folder
+        val rootFolderName = LOG_FOLDER
+        val rootFolderPath = PLog.logPath + rootFolderName + File.separator
+        createDirIfNotExists(rootFolderPath)
 
-    //Create Root folder
-    val rootFolderName = LOG_FOLDER
-    val rootFolderPath = PLog.logPath + rootFolderName + File.separator
-    createDirIfNotExists(rootFolderPath)
+        when (PLogImpl.getConfig()?.directoryStructure!!) {
 
-    when (PLogImpl.getConfig()?.directoryStructure!!) {
+            DirectoryStructure.FOR_DATE -> {
+                val folderPath = rootFolderPath + DateControl.instance.today
+                createDirIfNotExists(folderPath)
 
-        DirectoryStructure.FOR_DATE -> {
-            val folderPath = rootFolderPath + DateControl.instance.today
-            createDirIfNotExists(folderPath)
+                val hourlyFileName = if (PLogTestHelper.isTestingHourlyLogs) {
+                    PLogTestHelper.hourlyLogFileName
+                } else {
+                    DateControl.instance.today + DateControl.instance.hour
+                } //Name of File
 
-            val hourlyFileName = if (PLogTestHelper.isTestingHourlyLogs) {
-                PLogTestHelper.hourlyLogFileName
-            } else {
-                DateControl.instance.today + DateControl.instance.hour
-            } //Name of File
+                return if (fileName.isEmpty()) { //If file name is empty, then it's PLogger file
+                    folderPath + File.separator + hourlyFileName + PLogImpl.getConfig()?.logFileExtension!!
+                } else {
+                    if (isPLog) {
+                        folderPath + File.separator + hourlyFileName + fileName + PLogImpl.getConfig()?.logFileExtension!!
+                    } else {
+                        //Otherwise it's DataLogger file.
+                        folderPath + File.separator + fileName + PLogImpl.getConfig()?.logFileExtension!!
+                    }
+                }
+            }
 
-            return if (fileName.isEmpty()) { //If file name is empty, then it's PLogger file
-                folderPath + File.separator + hourlyFileName + PLogImpl.getConfig()?.logFileExtension!!
-            } else {
-                if (isPLog) {
-                    folderPath + File.separator + hourlyFileName + fileName + PLogImpl.getConfig()?.logFileExtension!!
+            DirectoryStructure.FOR_EVENT -> {
+
+                val parentPath = rootFolderPath + DateControl.instance.today
+                createDirIfNotExists(parentPath)
+
+                val nameForEventDirectory = PLogImpl.getConfig()?.nameForEventDirectory!!
+
+                val folderPath = parentPath + File.separator + nameForEventDirectory
+
+                //Create directory for event name and check it's result
+                if (createDirIfNotExists(folderPath)) {
+                    isDirectoryChanged(nameForEventDirectory)
+                }
+                currentNameOfDirectory = nameForEventDirectory //Set current name of directory
+
+                val hourlyFileName =
+                    currentNameOfDirectory + "_" + DateControl.instance.hour //Name of File
+
+                return if (fileName.isEmpty()) { //If file name is empty, then it's PLogger file
+                    folderPath + File.separator + hourlyFileName + PLogImpl.getConfig()?.logFileExtension!!
+                } else {
+                    if (isPLog) {
+                        folderPath + File.separator + hourlyFileName + fileName + PLogImpl.getConfig()?.logFileExtension!!
+                    } else {
+                        //Otherwise it's DataLogger file.
+                        folderPath + File.separator + fileName + PLogImpl.getConfig()?.logFileExtension!!
+                    }
+                }
+            }
+
+            DirectoryStructure.SINGLE_FILE_FOR_DAY -> {
+                val todayPath = DateControl.instance.today
+                return if (fileName.isEmpty()) { //If file name is empty, then it's PLogger file
+                    rootFolderPath + File.separator + todayPath + PLogImpl.getConfig()?.logFileExtension!!
                 } else {
                     //Otherwise it's DataLogger file.
-                    folderPath + File.separator + fileName + PLogImpl.getConfig()?.logFileExtension!!
+                    rootFolderPath + File.separator + fileName + PLogImpl.getConfig()?.logFileExtension!!
                 }
             }
         }
+    } catch (e: NullPointerException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        DirectoryStructure.FOR_EVENT -> {
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to append to file.. ${e.message}")
+    } catch (e: Exception) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-            val parentPath = rootFolderPath + DateControl.instance.today
-            createDirIfNotExists(parentPath)
-
-            val nameForEventDirectory = PLogImpl.getConfig()?.nameForEventDirectory!!
-
-            val folderPath = parentPath + File.separator + nameForEventDirectory
-
-            //Create directory for event name and check it's result
-            if (createDirIfNotExists(folderPath)) {
-                isDirectoryChanged(nameForEventDirectory)
-            }
-            currentNameOfDirectory = nameForEventDirectory //Set current name of directory
-
-            val hourlyFileName = currentNameOfDirectory + "_" + DateControl.instance.hour //Name of File
-
-            return if (fileName.isEmpty()) { //If file name is empty, then it's PLogger file
-                folderPath + File.separator + hourlyFileName + PLogImpl.getConfig()?.logFileExtension!!
-            } else {
-                if (isPLog) {
-                    folderPath + File.separator + hourlyFileName + fileName + PLogImpl.getConfig()?.logFileExtension!!
-                } else {
-                    //Otherwise it's DataLogger file.
-                    folderPath + File.separator + fileName + PLogImpl.getConfig()?.logFileExtension!!
-                }
-            }
-        }
-
-        DirectoryStructure.SINGLE_FILE_FOR_DAY -> {
-            val todayPath = DateControl.instance.today
-            return if (fileName.isEmpty()) { //If file name is empty, then it's PLogger file
-                rootFolderPath + File.separator + todayPath + PLogImpl.getConfig()?.logFileExtension!!
-            } else {
-                //Otherwise it's DataLogger file.
-                rootFolderPath + File.separator + fileName + PLogImpl.getConfig()?.logFileExtension!!
-            }
-        }
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to write to file.. ${e.message}")
     }
+    return fileName
 }
 
 /*
