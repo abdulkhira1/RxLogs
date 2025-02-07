@@ -36,20 +36,20 @@ fun writeToFile(path: String, data: String) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to append to file.. ${e.message}")
     } catch (e: RuntimeException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to write to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to write to file.. ${e.message}")
     }
 }
 
@@ -71,21 +71,18 @@ fun appendToFile(path: String, data: String) {
     } catch (e: NullPointerException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
-
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
+        Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
     } catch (e: RuntimeException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
+        Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == $path") }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "appendToFile: $path Unable to append to file.. ${e.message}")
     }
 }
 
@@ -122,14 +119,14 @@ fun checkFileExists(path: String, isPLog: Boolean = true): File {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
     } catch (e: RuntimeException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         saveFileEvent(file, isPLog)
@@ -164,20 +161,20 @@ private fun saveFileEvent(file: File, isPLog: Boolean = true) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
     } catch (e: RuntimeException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to write to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to write to file.. ${e.message}")
     }
 }
 
@@ -259,20 +256,20 @@ fun setupFilePaths(fileName: String = "", isPLog: Boolean = true): String {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to append to file.. ${e.message}")
     } catch (e: RuntimeException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to append to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
-            Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to write to file.. ${e.message}")
+
+        Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to write to file.. ${e.message}")
     }
     return fileName
 }
