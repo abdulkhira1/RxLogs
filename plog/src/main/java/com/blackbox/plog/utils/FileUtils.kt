@@ -38,6 +38,12 @@ fun writeToFile(path: String, data: String) {
 
         if (PLogImpl.getConfig()?.debugFileOperations!!)
             Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to append to file.. ${e.message}")
+    } catch (e: RuntimeException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "writeToFile: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
@@ -63,6 +69,12 @@ fun appendToFile(path: String, data: String) {
             RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
         }
     } catch (e: NullPointerException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "appendToFile: Unable to append to file.. ${e.message}")
+    } catch (e: RuntimeException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
@@ -112,6 +124,12 @@ fun checkFileExists(path: String, isPLog: Boolean = true): File {
 
         if (PLogImpl.getConfig()?.debugFileOperations!!)
             Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
+    } catch (e: RuntimeException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "checkFileExists: Unable to append to file.. ${e.message}")
     } catch (e: Exception) {
         e.printStackTrace()
         saveFileEvent(file, isPLog)
@@ -143,6 +161,12 @@ private fun saveFileEvent(file: File, isPLog: Boolean = true) {
         if (PLogImpl.getConfig()?.debugFileOperations!!)
             Log.i(PLog.DEBUG_TAG, "New file created: ${file.path}")
     } catch (e: NullPointerException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
+    } catch (e: RuntimeException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
@@ -232,6 +256,12 @@ fun setupFilePaths(fileName: String = "", isPLog: Boolean = true): String {
             }
         }
     } catch (e: NullPointerException) {
+        e.printStackTrace()
+        e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
+
+        if (PLogImpl.getConfig()?.debugFileOperations!!)
+            Log.i(PLog.DEBUG_TAG, "setupFilePaths: Unable to append to file.. ${e.message}")
+    } catch (e: RuntimeException) {
         e.printStackTrace()
         e.message?.let { Log.e(PLog.DEBUG_TAG, it) }
 
