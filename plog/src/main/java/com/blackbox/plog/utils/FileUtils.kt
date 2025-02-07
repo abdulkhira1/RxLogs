@@ -62,11 +62,19 @@ fun appendToFile(path: String, data: String) {
             file.appendText(data, Charsets.UTF_8)
         } else {
 
-            if (PLogImpl.getConfig()?.debugFileOperations!!)
+            // Log if the file does not exist and will be created
+            if (PLogImpl.getConfig()?.debugFileOperations == true) {
                 Log.i(PLog.DEBUG_TAG, "appendToFile: File doesn't exist, creating a new file..")
-
-            file.createNewFile()
-            RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
+            }
+            // Try creating the new file
+            val fileCreated = file.createNewFile()
+            if (fileCreated && file.name.isNotEmpty()) {
+                // If the file is created, send the event
+                RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
+            } else {
+                // Log if the file creation failed
+                Log.e(PLog.DEBUG_TAG, "appendToFile: Failed to create file: ${file.absolutePath}")
+            }
         }
     } catch (e: NullPointerException) {
         e.printStackTrace()
@@ -144,43 +152,48 @@ fun checkFileExists(path: String, isPLog: Boolean = true): File {
 
 
 private fun saveFileEvent(file: File, isPLog: Boolean = true) {
-
     try {
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
+        // Safe handling of the debugFileOperations flag
+        val debugFileOperations = PLogImpl.getConfig()?.debugFileOperations == true
+        // Log if debugging is enabled
+        if (debugFileOperations) {
             Log.i(PLog.DEBUG_TAG, "saveFileEvent: New file created: ${file.path}")
-
-        //Check if file created if part file
-        if (isPLog && !file.name.contains(PART_FILE_PREFIX)) {
-            PART_FILE_CREATED_PLOG = false
-        } else if (!isPLog && !file.name.contains(PART_FILE_PREFIX)) {
-            PART_FILE_CREATED_DATALOG = false
         }
-
-        RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
-
-        if (PLogImpl.getConfig()?.debugFileOperations!!)
+        // Check if file creation is part of the expected process
+        if (file.name != null) {
+            if (isPLog && !file.name.contains(PART_FILE_PREFIX)) {
+                PART_FILE_CREATED_PLOG = false
+            } else if (!isPLog && !file.name.contains(PART_FILE_PREFIX)) {
+                PART_FILE_CREATED_DATALOG = false
+            }
+        }
+        // Ensure the file name is valid before sending the event
+        if (file.name.isNotEmpty()) {
+            RxBus.send(LogEvents(EventTypes.NEW_EVENT_LOG_FILE_CREATED, file.name))
+        } else {
+            Log.e(PLog.DEBUG_TAG, "saveFileEvent: Invalid file name - cannot send event.")
+        }
+        // Log the file creation process if debugging is enabled
+        if (debugFileOperations) {
             Log.i(PLog.DEBUG_TAG, "New file created: ${file.path}")
+        }
     } catch (e: NullPointerException) {
+        // Handling NullPointerException and logging
+        Log.e(PLog.DEBUG_TAG, "saveFileEvent: NullPointerException occurred: ${e.message} for file: ${file.path}")
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == ${file.path}") }
-
-
-        Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
+        Log.i(PLog.DEBUG_TAG, "Unable to save event to file: ${e.message}")
     } catch (e: RuntimeException) {
+        // Handling RuntimeException and logging
+        Log.e(PLog.DEBUG_TAG, "saveFileEvent: RuntimeException occurred: ${e.message} for file: ${file.path}")
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == ${file.path}") }
-
-
-        Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to append to file.. ${e.message}")
+        Log.i(PLog.DEBUG_TAG, "Unable to save event to file: ${e.message}")
     } catch (e: Exception) {
+        // Handling any other Exception and logging
+        Log.e(PLog.DEBUG_TAG, "saveFileEvent: Exception occurred: ${e.message} for file: ${file.path}")
         e.printStackTrace()
-        e.message?.let { Log.e(PLog.DEBUG_TAG, "$it == ${file.path}") }
-
-
-        Log.i(PLog.DEBUG_TAG, "saveFileEvent: Unable to write to file.. ${e.message}")
+        Log.i(PLog.DEBUG_TAG, "Unable to write event to file: ${e.message}")
     }
 }
-
 /*
  * This will setup directory structure according to provided 'Directory Structure' Value.
  */
